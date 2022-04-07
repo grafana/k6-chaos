@@ -6,7 +6,9 @@ A collection of JavaScript helpers to run chaos experiments *effortlessly* on to
 
 Do you want to unleash some chaos? You are in the right place!
 
-The first thing you need is a custom k6 binary that has all the extensions required to run chaos experiments baked in. You can download a ready-to-use binary from the releases page.
+The first thing you need is a custom k6 binary that has all the extensions required to run chaos experiments baked in. 
+
+You can download a ready-to-use binary from the [releases page](https://github.com/grafana/k6-jslib-chaos/releases).
 
 > Why do I need a custom k6 binary? These helpers make heavy use of [k6 extensions](https://k6.io/docs/extensions) to inject failures in your favorite Kubernetes cluster (w/ xk6-kubernetes), or on that EC2 instance that your database runs on (w/ xk6-ssh).
 
