@@ -28,7 +28,7 @@ export default function () {
   console.log(`Killed pod: ${killed}`);
 
   // And then, we run DeleteRandomNamespace to delete a random namespace.
-  const deleted = kubernetes.deleteRandomNamespace(kubernetes)
+  const deleted = kubernetes.deleteRandomNamespace()
   console.log(`Deleted namespace: ${deleted}`);
 }
 ```
