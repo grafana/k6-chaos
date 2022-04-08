@@ -2,7 +2,7 @@
 >
 > As this is a proof of concept, the API may break in the future. USE AT YOUR OWN RISK!
 
-# k6-jslib-chaos
+# k6-chaos
 
 Do you want to unleash some chaos? You are in the right place!
 
