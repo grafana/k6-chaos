@@ -43,3 +43,11 @@ export default function () {
 | `killRandomJob` | kill a job randomly in the specified namespace |
 | `deleteRandomNamespace` | delete a random namespace |
 
+
+## WIP
+
+| Method | Description |
+| -------- | ---- |
+| `exhaustCPU` | stress CPU in one pod |
+| `exhaustMemory` | stress memory in one pod |
+
