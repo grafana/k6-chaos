@@ -1,15 +1,14 @@
-import { Kubernetes } from 'k6/x/kubernetes';
-import { KillRandomPod, DeleteRandomNamespace } from './src/kubernetes.js';
+import { KubernetesClient } from './src/chaos.js';
 
 export default function () {
-  // We instantiate a Kubernetes client.
-  const kubernetes = new Kubernetes()
+  // We instantiate a new *chaotic* Kubernetes client.
+  const kubernetes = new KubernetesClient()
 
   // We run KillRandomPod to randomly kill a pod in the specified namespace.
-  const killed = KillRandomPod(kubernetes, 'operations')
+  const killed = kubernetes.killRandomPod('operations')
   console.log(`Killed pod: ${killed}`);
 
   // And then, we run DeleteRandomNamespace to delete a random namespace.
-  const deleted = DeleteRandomNamespace(kubernetes)
+  const deleted = kubernetes.deleteRandomNamespace(kubernetes)
   console.log(`Deleted namespace: ${deleted}`);
 }

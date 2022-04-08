@@ -6,7 +6,7 @@
 
 Do you want to unleash some chaos? You are in the right place!
 
-This repo contains a [collection of JavaScript helpers](./src/kubernetes.js) to run chaos experiments *effortlessly* on top of [k6](https://k6.io).
+This repo contains a [collection of JavaScript helpers](./src/chaos.js) to run chaos experiments *effortlessly* on top of [k6](https://k6.io).
 
 # Getting started
 
@@ -36,9 +36,11 @@ export default function () {
 
 # APIs
 
+## Kubernetes
+
 | Method | Description |
 | -------- | ---- |
-| `KillRandomPod` | kill a pod randomly in the specified namespace |
-| `KillRandomJob` | kill a job randomly in the specified namespace |
-| `DeleteRandomNamespace` | delete a random namespace |
+| `killRandomPod` | kill a pod randomly in the specified namespace |
+| `killRandomJob` | kill a job randomly in the specified namespace |
+| `deleteRandomNamespace` | delete a random namespace |
 
