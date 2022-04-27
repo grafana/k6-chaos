@@ -17,21 +17,19 @@ You can also download the required k6 binary from the [releases page](https://gi
 # Example
 
 ```javascript
-import { KubernetesClient } from './src/chaos.js';
+import { Kubernetes } from 'k6/x/kubernetes';
+import { KubernetesChaos } from './src/kubernetes.js';
 
 export default function () {
-  // We instantiate a new *chaotic* Kubernetes client.
-  const kubernetes = new KubernetesClient()
 
-  // We run KillRandomPod to randomly kill a pod in the specified namespace.
-  const killed = kubernetes.killRandomPod('operations')
-  console.log(`Killed pod: ${killed}`);
+  const k8sClient = new Kubernetes()
+  const k8sChaos = new KubernetesChaos(k8sClient)
 
-  // And then, we run DeleteRandomNamespace to delete a random namespace.
-  const deleted = kubernetes.deleteRandomNamespace()
-  console.log(`Deleted namespace: ${deleted}`);
+  // randomly kill a job of the given namespace.
+  k8sChaos.killRandomJob(k8sClient.jobs.list()[0].namespace);
 }
 ```
+
 
 # APIs
 
@@ -39,9 +37,9 @@ export default function () {
 
 | Method | Description |
 | -------- | ---- |
-| `killRandomPod` | kill a pod randomly in the specified namespace |
+| `killNamespace` | kill a namespace |
 | `killRandomJob` | kill a job randomly in the specified namespace |
-| `deleteRandomNamespace` | delete a random namespace |
+| `killRandomPod` | kill a job randomly in the specified namespace |
 
 
 ## WIP
