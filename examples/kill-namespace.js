@@ -1,6 +1,6 @@
 import { sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
-import { KubernetesChaosClient } from '../src/chaos.js';
+import { KubernetesChaos } from '../src/kubernetes.js';
 
 function getNamespaceYaml(name) {
     return `kind: Namespace
@@ -14,20 +14,19 @@ metadata:
 
 export default function () {
 
-  // KubernetesChaosClient requires the Kubernetes client from xk6-kubernetes.
-  const k8sClient = new Kubernetes({})
+  const k8sClient = new Kubernetes()
+  const k8sChaos = new KubernetesChaos(k8sClient)
 
-  // create a namespace
-  const namespaceName = "namespace-name";
+  // create a random namespace
+  const namespaceName = Math.random().toString(36).slice(2, 7);
   k8sClient.namespaces.apply(getNamespaceYaml(namespaceName));
 
   // get number of existing namespaces
   let nss = k8sClient.namespaces.list(),
       nssLength = nss.length;
 
-  // kill the namespace.
-  KubernetesChaosClient.killNamespace(k8sClient, namespaceName)
-
+  // kill the namespace
+  k8sChaos.killNamespace(namespaceName)
 
   // validate the namespace was killed
   sleep(10); // we should check the namespace does not exist or is terminating

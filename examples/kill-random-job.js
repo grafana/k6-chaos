@@ -1,20 +1,32 @@
 import { sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
-import { KubernetesChaosClient } from '../src/chaos.js';
+import { KubernetesChaos } from '../src/kubernetes.js';
 
 export default function () {
 
   // KubernetesChaosClient requires the Kubernetes client from xk6-kubernetes.
   const k8sClient = new Kubernetes()
+  const k8sChaos = new KubernetesChaos(k8sClient)
+
+  // create random job
+  k8sClient.jobs.create({
+    namespace: 'default',
+    name: Math.random().toString(36).slice(2, 7),
+    image: "perl",
+    command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+  })
+  sleep(1)
 
   // get number of existing jobs
   let jobs = k8sClient.jobs.list(),
       jobsLength = jobs.length;
 
+  console.log(jobsLength)
 
   // randomly kill a job of the given namespace.
-  KubernetesChaosClient.killRandomJob(k8sClient, jobs[0].namespace);
+  k8sChaos.killRandomJob(jobs[0].namespace);
   sleep(2);
+
 
   // validate a job was killed
   jobs = k8sClient.jobs.list();

@@ -18,14 +18,15 @@ You can also download the required k6 binary from the [releases page](https://gi
 
 ```javascript
 import { Kubernetes } from 'k6/x/kubernetes';
-import { KubernetesChaosClient } from '../src/chaos.js';
+import { KubernetesChaos } from './src/kubernetes.js';
 
 export default function () {
 
   const k8sClient = new Kubernetes()
+  const k8sChaos = new KubernetesChaos(k8sClient)
 
   // randomly kill a job of the given namespace.
-  KubernetesChaosClient.killRandomJob(k8sClient, jobs[0].namespace);
+  k8sChaos.killRandomJob(k8sClient.jobs.list()[0].namespace);
 }
 ```
 
