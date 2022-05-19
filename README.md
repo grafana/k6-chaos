@@ -41,11 +41,18 @@ export default function () {
 | `killRandomJob` | kill a job randomly in the specified namespace |
 | `killRandomPod` | kill a job randomly in the specified namespace |
 
+## Stress
 
-## WIP
+### Node stress
 
+The `StressNodeAttack` class allows stressing a list of nodes. 
 | Method | Description |
 | -------- | ---- |
-| `exhaustCPU` | stress CPU in one pod |
-| `exhaustMemory` | stress memory in one pod |
+| `inNamespace` | start stress load in the given namespace  |
+| `inNodes` | stress the given nodes |
+| `noAutocleanup | do not delete stress jobs automatically when the attack ends |
+| `withCores` | sets the number of CPU concurrent stress processes to start |
+| `withCpuLoad` | sets the CPU load per stress process |
+| `withDuration` | sets the duration of the stress attack. E.g. '5m' |
+| `withName` | name of the attack. Used as prefix for stress jobs |
 
