@@ -30,7 +30,6 @@ export default function () {
 }
 ```
 
-
 # APIs
 
 ## Kubernetes
@@ -41,11 +40,30 @@ export default function () {
 | `killRandomJob` | kill a job randomly in the specified namespace |
 | `killRandomPod` | kill a job randomly in the specified namespace |
 
+## Stress
 
-## WIP
+### Node resource stress
 
-| Method | Description |
-| -------- | ---- |
-| `exhaustCPU` | stress CPU in one pod |
-| `exhaustMemory` | stress memory in one pod |
+The `StressNodeAttack` class allows stressing a list of nodes.
 
+Methods:
+
+`constructor`: creates a node stress attack
+
+    Parameters:
+     client: k8s client from xk6-kubernetes
+     options: options
+        - name: name of the attack (used as stress job name prefix)
+        - namespace: namespace where stress jobs will be started
+        - auto_clean: automatically delete stress jobs when attacks ends (defaults to true)
+
+`startAttack`: starts an attack on a list of nodes
+
+    Parameters:
+      nodes: list of nodes to stress
+      options: controls the stress attack
+        - cores: sets the number of CPU concurrent stress processes to start
+        - cpu_Load: sets the CPU load per stress process
+        - duration: sets the duration of the stress attack. E.g. '5m'
+
+`clean`: clean jobs started by the attack (if auto_cleanup was set to false)
