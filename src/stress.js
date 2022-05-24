@@ -11,6 +11,7 @@ export class StressNodesAttack {
         this.vm = '0'
         this.vmBytes = '256MB'
         this.timeout = '10'
+	this.autocleanup = true
     }
 
     inNamespace(namespace) {
@@ -24,6 +25,10 @@ export class StressNodesAttack {
     withName(name) {
         this.name = name
         return this
+    }
+    noAutocleanup() {
+	this.autocleanup = false
+	return this
     }
     withCPU(cpu) {
         this.cpu = cpu
@@ -51,7 +56,8 @@ export class StressNodesAttack {
             this.name,
             this.nodes,
             'progrium/stress',
-            ['stress', '--cpu', this.cpu, '--io', this.io, '--vm', this.vm, '--vm-bytes', this.vmBytes, '--timeout', this.timeout]
+            ['stress', '--cpu', this.cpu, '--io', this.io, '--vm', this.vm, '--vm-bytes', this.vmBytes, '--timeout', this.timeout],
+	    this.autocleanup
         )
         return this.name
     }

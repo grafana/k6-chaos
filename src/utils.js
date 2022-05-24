@@ -5,7 +5,7 @@ export class JobRunner {
         this.client = client
     }
 
-   runJobOnNodes(namespace, jobName, nodes, image, command){
+   runJobOnNodes(namespace, jobName, nodes, image, command, autodelete){
         let jobs = []
 	for (let i = 0; i < nodes.length; i++) {
           let name = `${jobName}-${(Math.random() + 1).toString(36).substring(7)}`;
@@ -15,7 +15,8 @@ export class JobRunner {
             name: name,
             image: image,
             command: command,
-            node_name: nodes[i]
+            node_name: nodes[i],
+            autodelete: autodelete
           })
 	  jobs.push(name)
         }
