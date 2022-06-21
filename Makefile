@@ -10,7 +10,7 @@ build:
 	go build  -o bin/ ./agent/
 
 format:
-	gofmt ./...
+	go fmt ./agent/
 
 test:
 	go test -race  ./...
