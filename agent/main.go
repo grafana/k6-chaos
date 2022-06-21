@@ -11,5 +11,6 @@ func main() {
 	}
 
 	rootCmd.AddCommand(cmd.BuildStressCmd())
+	rootCmd.AddCommand(cmd.BuildDelayCmd())
 	rootCmd.Execute()
 }
