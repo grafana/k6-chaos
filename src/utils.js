@@ -7,19 +7,19 @@ export class JobRunner {
 
     runJobOnNodes(namespace, jobName, nodes, image, command, autodelete) {
         let jobs = []
-        for (let i = 0; i < nodes.length; i++) {
-            let name = `${jobName}-${(Math.random() + 1).toString(36).substring(7)}`;
-            console.log(`Creating job ${name} on node ${nodes[i]}`)
-            const job = this.client.jobs.create({
-                namespace: namespace,
-                name: name,
-                image: image,
-                pull_policy: "IfNotPresent",
-                command: command,
-                node_name: nodes[i],
-                autodelete: autodelete
-            })
-            jobs.push(name)
+	for (let i = 0; i < nodes.length; i++) {
+          let name = `${jobName}-${(Math.random() + 1).toString(36).substring(7)}`;
+          console.log(`Creating job ${name} on node ${nodes[i]}`)
+          const job = this.client.jobs.create({
+            namespace: namespace,
+            name: name,
+            image: image,
+            pull_policy: "IfNotPresent",
+            command: command,
+            node_name: nodes[i],
+            autodelete: autodelete
+          })
+	  jobs.push(name)
         }
         return jobs
     }

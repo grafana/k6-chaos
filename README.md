@@ -67,3 +67,26 @@ Methods:
         - duration: sets the duration of the stress attack. E.g. '5m'
 
 `clean`: clean jobs started by the attack (if auto_cleanup was set to false)
+
+## Pod Disruption
+
+
+The `PodAttack` class allows disruption a Pod
+
+Methods:
+
+`constructor`: creates an attack for a pod
+
+    Parameters:
+      client: k8s client from xk6-kubernetes
+      pod: name
+      namespace:
+      options: options
+
+`startDelayAttack`: 
+
+    Parameters:
+      options: controls the delay attack
+        - delay: average delay in network packages (in milliseconds)
+        - variation: variation in the delay (in milliseconds)
+        - duration: duration of the disruption 
