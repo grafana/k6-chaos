@@ -44,7 +44,7 @@ export class StressNodesAttack {
             this.name,
             this.nodes,
             'grafana/k6-chaos',
-            ['stress', '-c', this.cores,'-l', this.cpuLoad, '-d', this.duration],
+            ['k6-chaos-agent', 'stress', '-c', this.cores,'-l', this.cpuLoad, '-d', this.duration],
             this.autocleanup
         )
         return this.name
