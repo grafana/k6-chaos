@@ -41,11 +41,10 @@ export default function () {
 | `killRandomJob` | kill a job randomly in the specified namespace |
 | `killRandomPod` | kill a job randomly in the specified namespace |
 
-## Stress
 
-### Node stress
-
+## Node stress
 The `StressNodeAttack` class allows stressing a list of nodes. 
+
 | Method | Description |
 | -------- | ---- |
 | `inNamespace` | start stress load in the given namespace  |
@@ -55,4 +54,29 @@ The `StressNodeAttack` class allows stressing a list of nodes.
 | `withCpuLoad` | sets the CPU load per stress process |
 | `withDuration` | sets the duration of the stress attack. E.g. '5m' |
 | `withName` | name of the attack. Used as prefix for stress jobs |
+
+## Pod disruption
+The `PodAttack` class allows the execution of disruptive actions on a running pod. Each attack is started by a `startXXXXAttack` method. Multiples attacks can be started on a pod.
+
+| Method | Description |
+| -------- | ---- |
+| `inPod` | stress the given pod |
+| `inNamespace` | namespace on which the pod is executing  |
+| `withName` | name of the attack  |
+| `install`  | install the k6-chaos agent in the target pod |
+| `startDelayAttack` | starts a network delay attack |
+
+### Network Delay attack
+
+A `PodDelayAttack` is created from a `PodAttack` using the `startDelayArrack` method. This
+attack has the following methods:
+
+| Method | Description |
+| -------- | ---- |
+| `withName` | name of the attack |
+| `withDuration` | sets the duration of the stress attack. E.g. '5m' |
+| `withDelay` | sets the average network delay introduced in the pod's traffic |
+| `withVariation` | sets the variation in the network delay introduced in the pod's traffic following a normal distribution. 0 means a fixed delay |
+| `execute` | executes the attack |
+
 

@@ -14,6 +14,7 @@ export class JobRunner {
             namespace: namespace,
             name: name,
             image: image,
+	    pull_policy: "IfNotPresent",
             command: command,
             node_name: nodes[i],
             autodelete: autodelete

@@ -9,3 +9,4 @@ COPY --from=builder /k6-chaos/bin/agent /usr/bin/k6-chaos-agent
 RUN apk update && apk add stress-ng iproute2
 
 WORKDIR /home/k6-chaos
+
