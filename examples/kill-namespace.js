@@ -5,17 +5,18 @@ import { KubernetesChaos } from '../src/kubernetes.js';
 
 export default function () {
   const k8sClient = new Kubernetes()
-  const k8sChaos = new KubernetesChaos(k8sClient)
 
-  // create a random namespace
-  const namespaceName = Math.random().toString(36).slice(2, 7);
-  k8sClient.namespaces.create({name: namespaceName});
+    // create a random namespace
+    const namespaceName = Math.random().toString(36).slice(2, 7);
+    k8sClient.namespaces.create({name: namespaceName});
+    const k8sChaos = new KubernetesChaos(k8sClient, namespaceName)
+
 
   // get number of existing namespaces
   let nssLength = k8sClient.namespaces.list().length;
 
   // kill the namespace
-  k8sChaos.killNamespace(namespaceName)
+  k8sChaos.killNamespace()
 
   // validate the namespace was killed
   sleep(10); // we should check the namespace does not exist or is terminating

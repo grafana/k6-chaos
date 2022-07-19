@@ -4,8 +4,6 @@
 
 # k6-chaos
 
-Do you want to unleash some chaos? You are in the right place!
-
 This repo contains a [collection of JavaScript helpers](./src/chaos.js) to run chaos experiments *effortlessly* on top of [k6](https://k6.io).
 
 # Getting started
@@ -13,6 +11,7 @@ This repo contains a [collection of JavaScript helpers](./src/chaos.js) to run c
 The first thing you need is a custom k6 binary with the extensions required to use this library: [xk6-kubernetes](https://github.com/grafana/xk6-kubernetes). 
 
 You can also download the required k6 binary from the [releases page](https://github.com/grafana/k6-jslib-chaos/releases).
+
 
 # APIs
 
@@ -49,6 +48,7 @@ Methods
 
 `getPods` returns a list with the names of the deployment pods
 
+
 ## KubernetesChaos
 
 The `KubernetesChaos` class offers methods for introducing faults in kubernetes resources (pods, jobs, etcetera)
@@ -59,15 +59,18 @@ Methods
 
       Parameters
         client: k8s client from xk6-kubernetes
+        namespace: namespace to inject chaos into
 
-`killNamespace`: kill a namespace
 
-`killRandomJob`: kill a job randomly in a namespace
+`killNamespace`: kill the namespace
 
-`killRandomPod`: kill a job randomly in a namespace
+`killRandomJob`: kill a job randomly in the namespace
+
+`killRandomPod`: kill a job randomly in the namespace
 
 
 ### Example
+
 
 ```javascript
 import { Kubernetes } from 'k6/x/kubernetes';
@@ -78,8 +81,8 @@ export default function () {
   const k8sClient = new Kubernetes()
   const k8sChaos = new KubernetesChaos(k8sClient)
 
-  // randomly kill a job of the given namespace.
-  k8sChaos.killRandomJob(k8sClient.jobs.list()[0].namespace);
+  // randomly kill a pod of the given namespace.
+  k8sChaos.killRandomPod();
 }
 ```
 

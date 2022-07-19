@@ -24,7 +24,7 @@ export default function () {
   console.log(jobsLength)
 
   // randomly kill a job of the given namespace.
-  k8sChaos.killRandomJob(jobs[0].namespace);
+  k8sChaos.killRandomJob();
   sleep(2);
 
 

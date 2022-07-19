@@ -1,38 +1,35 @@
 
 export class KubernetesChaos {
 
-    constructor(client) {
+    constructor(client, namespace = 'default') {
         this.client = client;
+        this.namespace = namespace
     }
 
-    _getPodNames(namespaceName) {
-        return this.client.pods.list(namespaceName).map(function(pod){
-            return pod.name
-        })
+    _getPodNames() {
+        return this.client.pods.list(this.namespace).map(pod=> pod.name)
     }
 
-    _getJobNames(namespaceName) {
-        return this.client.jobs.list(namespaceName).map(function(job){
-            return job.name
-        })
+    _getJobNames() {
+        return this.client.jobs.list(this.namespace).map(job => job.name)
     }
 
     // Kill a random pod in the specified namespaceName.
-    killRandomPod(namespaceName) {
-        const podNames = this._getPodNames(namespaceName)
+    killRandomPod() {
+        const podNames = this._getPodNames()
         const podName = podNames[Math.floor(Math.random() * podNames.length)]
-        return this.client.pods.delete(podName,namespaceName)
+        return this.client.pods.delete(podName, this.namespace)
     }
 
     // Kill a random job in the specified namespaceName.
-    killRandomJob(namespaceName) {
-        const jobNames = this._getJobNames(namespaceName)
+    killRandomJob() {
+        const jobNames = this._getJobNames()
         const jobName = jobNames[Math.floor(Math.random() * jobNames.length)]
-        return this.client.jobs.delete(jobName,namespaceName)
+        return this.client.jobs.delete(jobName, this.namespace)
     }
 
     // Kill a namespaceName.
-    killNamespace(namespaceName) {
-        return this.client.namespaces.delete(namespaceName)
+    killNamespace() {
+        return this.client.namespaces.delete(this.namespace)
     }
 }
