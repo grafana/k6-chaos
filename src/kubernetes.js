@@ -1,4 +1,6 @@
 
+import { getDeploymentPods } from "./helpers.js";
+
 export class KubernetesChaos {
 
     constructor(client, namespace = 'default') {
