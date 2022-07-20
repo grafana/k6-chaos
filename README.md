@@ -64,9 +64,6 @@ Methods
 
 `killNamespace`: kill the namespace
 
-`killRandomJob`: kill a job randomly in the namespace
-
-`killRandomPod`: kill a job randomly in the namespace
 
 
 ### Example
@@ -81,8 +78,8 @@ export default function () {
   const k8sClient = new Kubernetes()
   const k8sChaos = new KubernetesChaos(k8sClient)
 
-  // randomly kill a pod of the given namespace.
-  k8sChaos.killRandomPod();
+  // kill namespace.
+  k8sChaos.killNamespace();
 }
 ```
 
