@@ -14,7 +14,60 @@ The first thing you need is a custom k6 binary with the extensions required to u
 
 You can also download the required k6 binary from the [releases page](https://github.com/grafana/k6-jslib-chaos/releases).
 
-# Example
+# APIs
+
+## Helpers
+
+The `helpers.js` module offers helper functions and clases to facilitate the setup of test scenariors
+
+### DeploymentHelper
+
+The `DeploymentHelper` class facilitates deploying applications and exposing them as services.
+
+Methods
+
+`constructor` creates a helper for deploying an application
+
+      Parameters:
+        client: k8s client from xk6-kubernetes
+        name: name of the application
+        image: image of the application
+        replicas: number of replicas
+        options:
+          - namespace: target namespace (default is the 'default' namespace)
+          - app: value of the 'app' label used as pod selector. Defaults to the name
+          - port: port to expose in the application's container. Defaults to '80' 
+
+`deploy` deploys the application
+
+`expose` exposes the application as a service
+
+      Parameters
+        options: additional parameters for configuring the service
+          - port: port to expose the service. Defaults to '80'
+          - name: servie name. Defaults to the application's name
+
+`getPods` returns a list with the names of the deployment pods
+
+## KubernetesChaos
+
+The `KubernetesChaos` class offers methods for introducing faults in kubernetes resources (pods, jobs, etcetera)
+
+Methods
+
+`constructor`: creates an instance of KubernetesChaos
+
+      Parameters
+        client: k8s client from xk6-kubernetes
+
+`killNamespace`: kill a namespace
+
+`killRandomJob`: kill a job randomly in a namespace
+
+`killRandomPod`: kill a job randomly in a namespace
+
+
+### Example
 
 ```javascript
 import { Kubernetes } from 'k6/x/kubernetes';
@@ -29,16 +82,6 @@ export default function () {
   k8sChaos.killRandomJob(k8sClient.jobs.list()[0].namespace);
 }
 ```
-
-# APIs
-
-## Kubernetes
-
-| Method | Description |
-| -------- | ---- |
-| `killNamespace` | kill a namespace |
-| `killRandomJob` | kill a job randomly in the specified namespace |
-| `killRandomPod` | kill a job randomly in the specified namespace |
 
 ## Stress
 
