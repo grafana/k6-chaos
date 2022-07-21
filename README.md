@@ -30,10 +30,10 @@ Methods
       Parameters:
         client: k8s client from xk6-kubernetes
         name: name of the application
+        namespace: target namespace
         image: image of the application
         replicas: number of replicas
         options:
-          - namespace: target namespace (default is the 'default' namespace)
           - app: value of the 'app' label used as pod selector. Defaults to the name
           - port: port to expose in the application's container. Defaults to '80' 
 

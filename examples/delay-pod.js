@@ -4,15 +4,18 @@ import { PodAttack } from '../src/pod-attack.js';
 import { DeploymentHelper } from '../src/helpers.js';
 import  http from 'k6/http';
 
-const namespace = "default"
 const app = "nginx"
 const image = "nginx"
 
 export function setup() {
   const k8sClient = new Kubernetes()
 
+  // create a random namespace
+  const namespace = "k6-"+Math.random().toString(32).slice(2, 7);
+  k8sClient.namespaces.create({name: namespace})
+
   // create a test deployment
-  const helper = new DeploymentHelper(k8sClient, app, image, 1)
+  const helper = new DeploymentHelper(k8sClient, app, namespace, image, 1)
   helper.deploy()
   
   // give time for deployment's pods to be created
@@ -23,10 +26,15 @@ export function setup() {
   // pass service ip to scenarios
   return {
     srv_ip: ip,
-    pods: helper.getPods()
+    pods: helper.getPods(),
+    namespace: namespace,
   }
 }
 
+export function teardown(data) {
+  const k8sClient = new Kubernetes()
+  k8sClient.namespaces.delete(data.namespace)
+}
 
 export function disrupt(data) {
   const k8sClient = new Kubernetes()
@@ -36,7 +44,7 @@ export function disrupt(data) {
   const podAttack = new PodAttack(
     k8sClient,
     target,
-    namespace
+    data.namespace
   )
 
   podAttack.startDelayAttack(

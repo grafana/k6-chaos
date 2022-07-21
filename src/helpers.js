@@ -2,13 +2,13 @@ import { sleep } from 'k6';
 
 export class DeploymentHelper {
 
-    constructor(k8sClient, name, image, replicas, options = {}) {
+    constructor(k8sClient, name, namespace, image, replicas, options = {}) {
         this.k8sClient = k8sClient
         this.name = name
+        this.namespace = namespace
         this.image = image
         this.replicas = replicas
         this.app = options.app || name
-        this.namespace = options.namespace || "default"
         this.port = options.port || 80
     }
 

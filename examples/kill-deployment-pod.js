@@ -3,15 +3,18 @@ import { Kubernetes } from 'k6/x/kubernetes';
 import { DeploymentHelper } from '../src/helpers.js';
 import  http from 'k6/http';
 
-const namespace = "default"
 const app = "nginx"
 const image = "nginx"
 
 export function setup() {
     const k8sClient = new Kubernetes()
 
+    // create a random namespace
+    const namespace = "k6-"+Math.random().toString(32).slice(2, 7);
+    k8sClient.namespaces.create({name: namespace})
+
     // create a test deployment
-    const helper = new DeploymentHelper(k8sClient, app, image, 1)
+    const helper = new DeploymentHelper(k8sClient, app, namespace, image, 1)
     helper.deploy()
 
     // wait for deployment's pods to be created
@@ -23,7 +26,8 @@ export function setup() {
     // pass service ip to scenarios
     return {
         srv_ip: ip,
-        pods: helper.getPods()
+        pods: helper.getPods(),
+        namespace: namespace
     }
 }
 
@@ -32,8 +36,8 @@ export function disrupt(data) {
 
     // kill por in the deployment
     const target = data.pods[0]
-    console.log("Killing pod " + target + " in namespace " + namespace)
-    k8sClient.pods.delete(target, namespace)
+    console.log("Killing pod " + target + " in namespace " + data.namespace)
+    k8sClient.pods.delete(target, data.namespace)
 }
 
 export default function (data) {
@@ -43,6 +47,11 @@ export default function (data) {
       });
     sleep(1)
 }
+
+export function teardown(data) {
+    const k8sClient = new Kubernetes()
+    k8sClient.namespaces.delete(data.namespace)
+  }
 
 export const options = {
     scenarios: {
