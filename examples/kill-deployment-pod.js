@@ -1,6 +1,7 @@
 import { check, sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
 import { DeploymentHelper } from '../src/helpers.js';
+import { PodDisruptor } from '../src/pod.js'
 import  http from 'k6/http';
 
 const app = "nginx"
@@ -34,10 +35,14 @@ export function setup() {
 export function disrupt(data) {
     const k8sClient = new Kubernetes()
 
-    // kill por in the deployment
     const target = data.pods[0]
+    const podDisruptor = new PodDisruptor(
+        k8sClient,
+        target,
+        data.namespace
+    )
     console.log("Killing pod " + target + " in namespace " + data.namespace)
-    k8sClient.pods.delete(target, data.namespace)
+    podDisruptor.kill()
 }
 
 export default function (data) {

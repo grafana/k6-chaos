@@ -120,6 +120,8 @@ Methods:
       namespace:
       options: options
 
+`kill`: kill pod
+
 `slowdownNetwork`: delays network traffic for the pod 
 
     Parameters:
@@ -127,3 +129,4 @@ Methods:
         - delay: average delay in network packages (in milliseconds)
         - variation: variation in the delay (in milliseconds)
         - duration: duration of the disruption 
+

@@ -31,5 +31,9 @@ export class PodDisruptor {
         })
         return this.name
     }
+
+    kill() {
+        this.client.pods.delete(this.pod, this.namespace)
+    }
 }
 
