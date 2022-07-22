@@ -116,6 +116,29 @@ Methods:
 
 ## Examples
 
+The [./exaples](./examples) forlder contains examples of using `k6-chaos`. 
+
+
+### Running examples
+Notice `k6-chaos` needs the image `grafana/k6-agent`. This image can build using the command
+
+```bash
+make container
+```
+
+If you are using a local cluster (e.g Kind or Minikube, ) the `grafana/k6-chaos` available in the cluster where the test application will run. 
+
+If using `kind` the following command make the image in the cluster
+
+```
+kind load docker-image grafana/k6-chaos`
+```
+
+If using `minikube` the following command makes the image available in the cluster:
+
+```bash
+minikube image load grafana/k6-chaos
+```
 
 ## Kill pod in a deployment
 
