@@ -15,7 +15,7 @@ export function setup() {
   k8sClient.namespaces.create({name: namespace})
 
   // create a test deployment
-  const helper = new DeploymentHelper(k8sClient, app, namespace, image, 3)
+  const helper = new DeploymentHelper(k8sClient, app, namespace, image, 2)
   helper.deploy()
   
   // give time for deployment's pods to be created
@@ -49,7 +49,7 @@ export function disrupt(data) {
 
   podDisruptor.slowdownNetwork(
     {
-      delay: 100,
+      delay: 200,
       duration: "30s"
     }
   )
