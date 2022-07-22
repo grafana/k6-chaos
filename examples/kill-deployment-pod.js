@@ -50,7 +50,6 @@ export default function (data) {
     check(res, {
         'successful request': (r) => r.status === 200,
       });
-    sleep(1)
 }
 
 export function teardown(data) {
@@ -61,12 +60,14 @@ export function teardown(data) {
 export const options = {
     scenarios: {
         load: {
-            executor: 'constant-vus',
-            vus: 10,
+            executor: 'constant-arrival-rate',
+            rate: 100,
+            preAllocatedVUs: 10,
+            maxVUs: 100,
             exec: "default",
             startTime: '0s',
-            duration: "60s",
-        },
+            duration: "90s",
+          },
         delay: {
             executor: 'shared-iterations',
             iterations: 1,
