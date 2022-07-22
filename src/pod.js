@@ -1,6 +1,6 @@
 import { sleep } from 'k6';
 
-export class PodAttack {
+export class PodDisruptor {
     constructor(client, pod, namespace, options) {
         this.client = client
         this.pod = pod
@@ -19,7 +19,7 @@ export class PodAttack {
         sleep(10)  // give time for the container to start
     }
 
-    startDelayAttack(options){
+    slowdownNetwork(options){
         let duration = options.duration || '30s'
         let delay = options.delay || 100
         let variation = options.variation || 0 

@@ -1,14 +1,14 @@
 import { sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
-import { StressNodesAttack } from '../src/stress.js';
+import { NodeDisruptor } from '../src/stress.js';
 
 export default function () {
   const k8sClient = new Kubernetes()
   const nodes = k8sClient.nodes.list().map(node => node.name)
-  const stress = new StressNodesAttack(k8sClient)
+  const stress = new NodeDisruptor(k8sClient)
   
   // stress the nodes of the cluster
-  stress.startAttack(
+  stress.stress(
     nodes,
     {
       cpu_load: 50,

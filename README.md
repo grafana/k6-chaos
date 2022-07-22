@@ -61,13 +61,10 @@ Methods
         client: k8s client from xk6-kubernetes
         namespace: namespace to inject chaos into
 
-
 `killNamespace`: kill the namespace
 
 
-
 ### Example
-
 
 ```javascript
 import { Kubernetes } from 'k6/x/kubernetes';
@@ -83,15 +80,13 @@ export default function () {
 }
 ```
 
-## Stress
+## Node disruptor
 
-### Node resource stress
-
-The `StressNodeAttack` class allows stressing a list of nodes.
+The `NodeDisruptor` disrupts nodes
 
 Methods:
 
-`constructor`: creates a node stress attack
+`constructor`: creates a node distuptor
 
     Parameters:
      client: k8s client from xk6-kubernetes
@@ -100,7 +95,7 @@ Methods:
         - namespace: namespace where stress jobs will be started
         - auto_clean: automatically delete stress jobs when attacks ends (defaults to true)
 
-`startAttack`: starts an attack on a list of nodes
+`stress`: stressing a list of nodes by exhausting resources
 
     Parameters:
       nodes: list of nodes to stress
@@ -109,16 +104,15 @@ Methods:
         - cpu_Load: sets the CPU load per stress process
         - duration: sets the duration of the stress attack. E.g. '5m'
 
-`clean`: clean jobs started by the attack (if auto_cleanup was set to false)
+`clean`: clean jobs started by the disruptor (if auto_cleanup was set to false)
 
 ## Pod Disruption
 
-
-The `PodAttack` class allows disruption a Pod
+The `PodDisruptor` class allows disruption a Pod
 
 Methods:
 
-`constructor`: creates an attack for a pod
+`constructor`: creates an disruptor for a pod
 
     Parameters:
       client: k8s client from xk6-kubernetes
@@ -126,7 +120,7 @@ Methods:
       namespace:
       options: options
 
-`startDelayAttack`: 
+`slowdownNetwork`: delays network traffic for the pod 
 
     Parameters:
       options: controls the delay attack

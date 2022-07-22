@@ -1,6 +1,6 @@
 import { JobRunner } from './utils.js';
 
-export class StressNodesAttack {
+export class NodeDisruptor {
     constructor(client, options = {}) {
         this.client = client
 	    this.jobRunner = new JobRunner(client)
@@ -9,7 +9,7 @@ export class StressNodesAttack {
         this.autocleanup = options.auto_cleanup | true
     }
 
-    startAttack(nodes, options) {
+    stress(nodes, options) {
         const cores = options.cores || 1
         const cpuLoad = options.cpu_load || 100
         const duration = options.duration || "1m"

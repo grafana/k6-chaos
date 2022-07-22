@@ -1,6 +1,6 @@
 import { sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
-import { PodAttack } from '../src/pod-attack.js';
+import { PodDisruptor } from '../src/pod.js';
 import { DeploymentHelper } from '../src/helpers.js';
 import  http from 'k6/http';
 
@@ -41,13 +41,13 @@ export function disrupt(data) {
   const target = data.pods[0]
 
   // stress the pod of the cluster
-  const podAttack = new PodAttack(
+  const podDisruptor = new PodDisruptor(
     k8sClient,
     target,
     data.namespace
   )
 
-  podAttack.startDelayAttack(
+  podDisruptor.slowdownNetwork(
     {
       delay: 100,
       duration: "30s"
