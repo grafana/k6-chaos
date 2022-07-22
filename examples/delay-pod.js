@@ -4,8 +4,8 @@ import { PodAttack } from '../src/pod-attack.js';
 import { DeploymentHelper } from '../src/helpers.js';
 import  http from 'k6/http';
 
-const app = "nginx"
-const image = "nginx"
+const app = "httpbin"
+const image = "kennethreitz/httpbin"
 
 export function setup() {
   const k8sClient = new Kubernetes()
@@ -15,7 +15,7 @@ export function setup() {
   k8sClient.namespaces.create({name: namespace})
 
   // create a test deployment
-  const helper = new DeploymentHelper(k8sClient, app, namespace, image, 1)
+  const helper = new DeploymentHelper(k8sClient, app, namespace, image, 3)
   helper.deploy()
   
   // give time for deployment's pods to be created
@@ -56,18 +56,19 @@ export function disrupt(data) {
 }
 
 export default function(data) {
-  http.get('http://'+ data.srv_ip);
-  sleep(1)
+  http.get(`http://${data.srv_ip}/delay/0.1`);
 }
 
 export const options = {
   scenarios: {
     load: {
-      executor: 'constant-vus',
-      vus: 10,
+      executor: 'constant-arrival-rate',
+      rate: 100,
+      preAllocatedVUs: 10,
+      maxVUs: 100,
       exec: "default",
       startTime: '0s',
-      duration: "60s",
+      duration: "90s",
     }, 
     delay: {
       executor: 'shared-iterations',
