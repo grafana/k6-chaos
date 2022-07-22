@@ -64,22 +64,6 @@ Methods
 `killNamespace`: kill the namespace
 
 
-### Example
-
-```javascript
-import { Kubernetes } from 'k6/x/kubernetes';
-import { KubernetesChaos } from './src/kubernetes.js';
-
-export default function () {
-
-  const k8sClient = new Kubernetes()
-  const k8sChaos = new KubernetesChaos(k8sClient)
-
-  // kill namespace.
-  k8sChaos.killNamespace();
-}
-```
-
 ## Node disruptor
 
 The `NodeDisruptor` disrupts nodes
@@ -130,3 +114,59 @@ Methods:
         - variation: variation in the delay (in milliseconds)
         - duration: duration of the disruption 
 
+## Examples
+
+
+## Kill pod in a deployment
+
+The [kill-deployment-pod.js example](examples/kill-deployment-pod.js) shows how `PodDisruptor` can be used for testing the effect of killing an instance of a deloyment. When executed, we can see how the requests are momentarely affected until the pod is restarted:
+
+
+```bash
+WARN[0024] Request Failed                                error="Get \"http://172.18.255.200\": dial tcp 172.18.255.200:80: connect: connection refused"
+WARN[0024] Request Failed                                error="Get \"http://172.18.255.200\": dial tcp 172.18.255.200:80: connect: connection refused"
+WARN[0025] Request Failed                                error="Get \"http://172.18.255.200\": dial tcp 172.18.255.200:80: connect: connection refused"
+WARN[0026] Insufficient VUs, reached 100 active VUs and cannot initialize more  executor=constant-arrival-rate scenario=load
+WARN[0026] Request Failed                                error="Get \"http://172.18.255.200\": dial tcp 172.18.255.200:80: connect: connection refused"
+WARN[0030] Request Failed                                error="Get \"http://172.18.255.200\": dial tcp 172.18.255.200:80: connect: no route to host"
+WARN[0030] Request Failed                                error="Get \"http://172.18.255.200\": dial tcp 172.18.255.200:80: connect: no route to host"
+
+running (01m34.0s), 000/101 VUs, 8831 complete and 0 interrupted iterations
+load  ✓ [======================================] 000/100 VUs  1m30s           100.00 iters/s
+delay ✓ [======================================] 1 VUs        00m10.0s/10m0s  1/1 shared iters
+
+     ✗ successful request
+      ↳  99% — ✓ 8824 / ✗ 6
+
+```
+
+## Introduce delay in network
+
+The [delay-pod.js example](examples/delay-pod.js) shows how `PodDisruptor` can be used for testing the effect of delays in the traffic from an instance of a deloyment. The example uses a deployment of the `httpbin`. The initial setup makes each request to take `100ms`. When executed without any disruption the statistics looks like this.
+
+```
+http_req_duration..............: avg=101.66ms min=100.59ms med=101.69ms max=107.24ms p(90)=102.22ms p(95)=102.36ms
+```
+
+When the disruption of an additional `200ms` delay is introduced for a period of `30s`, we can see how the stastics are affected (in particular, `p(90)` and `p(95)`):
+
+```bash
+     http_req_duration..............: avg=126.21ms min=100.52ms med=101.7ms  max=952.95ms p(90)=301.28ms p(95)=301.8ms 
+s
+```
+
+## Kill namespace
+
+```javascript
+import { Kubernetes } from 'k6/x/kubernetes';
+import { KubernetesChaos } from './src/kubernetes.js';
+
+export default function () {
+
+  const k8sClient = new Kubernetes()
+  const k8sChaos = new KubernetesChaos(k8sClient)
+
+  // kill namespace.
+  k8sChaos.killNamespace();
+}
+```
