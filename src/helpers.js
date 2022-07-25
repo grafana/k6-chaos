@@ -53,7 +53,11 @@ spec:
     }
 
     deploy() {
-        this.k8sClient.deployments.apply(this.deploymentManifest(), this.namespace)
+        let deployment = this.k8sClient.deployments.apply(this.deploymentManifest(), this.namespace)
+        while ( deployment.status.ready_replicas != deployment.spec.replicas) {
+            sleep(1)
+            deployment = deployment = this.k8sClient.deployments.get(this.app, this.namespace)
+        }
     }
 
     // exports a deployment as a LoadBalancer service and returns the external IP  

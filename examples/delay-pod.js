@@ -18,9 +18,6 @@ export function setup() {
   const helper = new DeploymentHelper(k8sClient, app, namespace, image, 2)
   helper.deploy()
   
-  // give time for deployment's pods to be created
-  sleep(5)
-
   const ip = helper.expose()
 
   // pass service ip to scenarios

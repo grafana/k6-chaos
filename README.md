@@ -37,7 +37,7 @@ Methods
           - app: value of the 'app' label used as pod selector. Defaults to the name
           - port: port to expose in the application's container. Defaults to '80' 
 
-`deploy` deploys the application
+`deploy` deploys the application and waits for the replicas to be ready
 
 `expose` exposes the application as a service
 
