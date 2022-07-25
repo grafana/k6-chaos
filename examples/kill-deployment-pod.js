@@ -24,21 +24,23 @@ export function setup() {
     // pass service ip to scenarios
     return {
         srv_ip: ip,
-        pods: helper.getPods(),
         namespace: namespace
     }
 }
 
 export function disrupt(data) {
     const k8sClient = new Kubernetes()
-
-    const target = data.pods[0]
     const podDisruptor = new PodDisruptor(
         k8sClient,
-        target,
-        data.namespace
+        {
+            namespace: data.namespace,
+            selector: { app: app },
+            picker: 'random'
+
+        }
     )
-    console.log("Killing pod " + target + " in namespace " + data.namespace)
+      // kill one random replica of the deployment
+    console.log("Killing pod " + podDisruptor.pod + " in namespace " + data.namespace)
     podDisruptor.kill()
 }
 

@@ -92,22 +92,23 @@ Methods:
 
 ## Pod Disruption
 
-The `PodDisruptor` class allows disruption a Pod
+The `PodDisruptor` class allows disruption of Pods
 
 Methods:
 
-`constructor`: creates an disruptor for a pod
+`constructor`: creates a pod disruptor
 
     Parameters:
       client: k8s client from xk6-kubernetes
-      pod: name
-      namespace:
-      options: options
+      options:
+        - namespace: namespace for selecting target pod(s) 
+        - selector: labels for selecting target pod(s). An empty selector matches all pods
+        - picker: strategy used for picking pod(s) to disrupt from potential targets.
+          Presenlty the only suppored value is 'ramdom' (one random pod)
 
 `kill`: kill pod
 
 `slowdownNetwork`: delays network traffic for the pod 
-
     Parameters:
       options: controls the delay attack
         - delay: average delay in network packages (in milliseconds)

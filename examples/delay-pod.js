@@ -23,7 +23,6 @@ export function setup() {
   // pass service ip to scenarios
   return {
     srv_ip: ip,
-    pods: helper.getPods(),
     namespace: namespace,
   }
 }
@@ -35,13 +34,15 @@ export function teardown(data) {
 
 export function disrupt(data) {
   const k8sClient = new Kubernetes()
-  const target = data.pods[0]
 
-  // stress the pod of the cluster
+  // delay traffic from one random replica of the deployment
   const podDisruptor = new PodDisruptor(
     k8sClient,
-    target,
-    data.namespace
+    {
+      namespace: data.namespace,
+      selector: { app: app},
+      picker: 'random'
+    }
   )
 
   podDisruptor.slowdownNetwork(

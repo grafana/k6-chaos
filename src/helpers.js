@@ -1,4 +1,5 @@
 import { sleep } from 'k6';
+import { labelMatcher} from './utils.js'
 
 export class DeploymentHelper {
 
@@ -79,21 +80,12 @@ spec:
     }
   
     getPods() {
-        return getDeploymentPods(this.k8sClient, this.app, this.namespace).map(pod => pod.name)
-    }
+        const deployment = this.k8sClient.deployments.get(this.app, this.namespace)
+        let labelSelector = deployment.spec.selector.match_labels
+        return k8sClient.pods
+            .list(namespace)
+            .filter(pod => { return labelMatcher(labelSelector, pod.labels) })
+            .map(pod => pod.name)
+    }   
 }
 
-function labelMatcher(selector, labels) {
-    for (const [label, value] of Object.entries(selector)) {
-        if (labels[label] != value) {
-            return false
-        }
-    }
-    return true
-}
-
-export function getDeploymentPods(k8sClient, app, namespace) {
-    const deployment = k8sClient.deployments.get(app, namespace)
-    let labelSelector = deployment.spec.selector.match_labels
-    return k8sClient.pods.list(namespace).filter(pod => { return labelMatcher(labelSelector, pod.labels) })
-}

@@ -33,3 +33,12 @@ export class JobRunner {
     }
 
 }
+
+export function labelMatcher(selector, labels) {
+    for (const [label, value] of Object.entries(selector)) {
+        if (labels[label] != value) {
+            return false
+        }
+    }
+    return true
+}
