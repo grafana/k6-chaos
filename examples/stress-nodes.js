@@ -1,6 +1,6 @@
 import { sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
-import { NodeDisruptor } from '../src/stress.js';
+import { NodeDisruptor } from '../src/node.js';
 
 export default function () {
   const k8sClient = new Kubernetes()

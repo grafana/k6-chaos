@@ -4,9 +4,9 @@ export class NodeDisruptor {
     constructor(client, options = {}) {
         this.client = client
 	    this.jobRunner = new JobRunner(client)
-        this.name = options.name | 'k6-chaos'
-        this.namespace = options.namespace | 'default'
-        this.autocleanup = options.auto_cleanup | true
+        this.name = options.name || 'k6-chaos'
+        this.namespace = options.namespace || 'default'
+        this.autocleanup = options.auto_cleanup || true
     }
 
     stress(nodes, options) {
