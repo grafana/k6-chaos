@@ -5,10 +5,10 @@ import { NodeDisruptor } from '../src/stress.js';
 export default function () {
   const k8sClient = new Kubernetes()
   const nodes = k8sClient.nodes.list().map(node => node.name)
-  const stress = new NodeDisruptor(k8sClient)
+  const nodeDisruptor = new NodeDisruptor(k8sClient)
   
   // stress the nodes of the cluster
-  stress.stress(
+  nodeDisruptor.stress(
     nodes,
     {
       cpu_load: 50,
