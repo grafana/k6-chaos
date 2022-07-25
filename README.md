@@ -77,6 +77,8 @@ Methods:
      options: options
         - name: name of the attack (used as stress job name prefix)
         - namespace: namespace where stress jobs will be started
+        - selector: labels for selecting target node(s). An empty selector matches all nodes
+        - picker: strategy used for picking node(s) to disrupt from potential targets.
         - auto_clean: automatically delete stress jobs when attacks ends (defaults to true)
 
 `stress`: stressing a list of nodes by exhausting resources
