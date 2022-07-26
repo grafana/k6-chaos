@@ -49,9 +49,10 @@ Methods
 `getPods` returns a list with the names of the deployment pods
 
 
-## KubernetesChaos
+## KubernetesDisruptor
 
-The `KubernetesChaos` class offers methods for introducing faults in kubernetes resources (pods, jobs, etcetera)
+The `KubernetesDisruptor` class offers methods for introducing faults in kubernetes resources such as namespaces, secrets, config-maps, CRDs, etcetera. It can be used for
+example for testing the resilience of operators to those failures.
 
 Methods
 
@@ -179,20 +180,4 @@ When the disruption of an additional `200ms` delay is introduced for a period of
 ```bash
      http_req_duration..............: avg=126.21ms min=100.52ms med=101.7ms  max=952.95ms p(90)=301.28ms p(95)=301.8ms 
 s
-```
-
-## Kill namespace
-
-```javascript
-import { Kubernetes } from 'k6/x/kubernetes';
-import { KubernetesChaos } from './src/kubernetes.js';
-
-export default function () {
-
-  const k8sClient = new Kubernetes()
-  const k8sChaos = new KubernetesChaos(k8sClient)
-
-  // kill namespace.
-  k8sChaos.killNamespace();
-}
 ```

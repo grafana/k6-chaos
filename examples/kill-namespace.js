@@ -1,28 +1,27 @@
 import { sleep } from 'k6';
 import { Kubernetes } from 'k6/x/kubernetes';
-import { KubernetesChaos } from '../src/kubernetes.js';
-
+import { KubernetesDisruptor } from '../src/kubernetes.js';
 
 export default function () {
   const k8sClient = new Kubernetes()
 
     // create a random namespace
-    const namespaceName = Math.random().toString(36).slice(2, 7);
+    const namespaceName = Math.random().toString(32).slice(2, 7);
     k8sClient.namespaces.create({name: namespaceName});
-    const k8sChaos = new KubernetesChaos(k8sClient, namespaceName)
+    sleep(2);
 
-
-  // get number of existing namespaces
-  let nssLength = k8sClient.namespaces.list().length;
+    const K8sDisruptor = new KubernetesDisruptor(k8sClient, namespaceName)
 
   // kill the namespace
-  k8sChaos.killNamespace()
+  K8sDisruptor.killNamespace()
+  sleep(2);
 
   // validate the namespace was killed
-  sleep(10); // we should check the namespace does not exist or is terminating
-  if(k8sClient.namespaces.list().length + 1 === nssLength) {
-    console.log("namespace was killed")
-  } else {
-    throw "namespace was not killed"
+  for (const ns in k8sClient.namespaces.list()) {
+     if (ns.name == namespaceName && ns.status.phase != "Terminating") {
+      throw "namespace was not killed"
+     }
   }
+
+  console.log("namespace was killed")
 }
