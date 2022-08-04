@@ -1,6 +1,6 @@
 module go.k6.io/k6-chaos
 
-go 1.18
+go 1.17
 
 require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
