@@ -111,12 +111,24 @@ Methods:
 
 `kill`: kill pod
 
-`slowdownNetwork`: delays network traffic for the pod 
+`slowdownNetwork`: delays network traffic for the pod
+
     Parameters:
       options: controls the delay attack
         - delay: average delay in network packages (in milliseconds)
         - variation: variation in the delay (in milliseconds)
         - duration: duration of the disruption 
+
+`slowdownHttp`: delays http requests to the pod.
+
+      Parameters:
+        options: controls the delay attack
+          - delay: average delay in network packages (in milliseconds)
+          - variation: variation in the delay (in milliseconds)
+          - duration: duration of the disruption
+          - target: port on which the requests will be intercepted (defaults to 80)
+          - port: port the transparent proxy will use to listen for requests (defaults to 8080)
+          - interface: interface on thich the traffic will be intercepted (defaults to eth0)
 
 ## Examples
 

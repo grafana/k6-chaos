@@ -52,6 +52,22 @@ export class PodDisruptor {
         return this.name
     }
 
+    slowdownHttp(options){
+        const duration = options.duration || '30s'
+        const delay = options.delay || 100
+        const variation = options.variation || 0
+	const target = options.target || 80
+	const port = options.port || 8080
+        const command = ["k6-chaos-agent", "http", "-a", delay,"-v", variation, "-d", duration, "-p", port, "-t", target ]
+        this.client.pods.exec({
+            pod: this.pod,
+            namespace: this.namespace,
+            container: "k6-chaos",
+	    command: command
+        })
+        return this.name
+    }
+
     kill() {
         this.client.pods.delete(this.pod, this.namespace)
     }
