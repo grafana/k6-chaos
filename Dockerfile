@@ -6,7 +6,7 @@ RUN ls
 
 FROM alpine:3.15
 COPY --from=builder /k6-chaos/bin/agent /usr/bin/k6-chaos-agent
-RUN apk update && apk add stress-ng iproute2
+RUN apk update && apk add stress-ng iproute2 iptables
 
 WORKDIR /home/k6-chaos
 
