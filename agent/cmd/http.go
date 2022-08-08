@@ -71,35 +71,25 @@ func (s *httpCmd) run(cmd *cobra.Command, args []string) error {
 		delay: s.average,
 	}
 
-	wp := make(chan error)
+	wc := make(chan error)
 	go func() {
-		wp <- p.Start()
+		wc <- p.Start()
 	}()
 
 	defer func() {
-		s.buildIptablesCmd(DELETE).Start()	
+		s.buildIptablesCmd(DELETE).Run()
 		p.Stop()
 	}()
 
-	disruptor := s.buildIptablesCmd(ADD)
-	err := disruptor.Start()
+	err := s.buildIptablesCmd(ADD).Run()
 	if err != nil {
 		return err
 	}
 
-	wc := make(chan error)
-	go func() {
-		wc <- disruptor.Wait()
-	}()
-
-	// wait for given duration, ip tables error or proxy server error
+	// wait for given duration or proxy server error
 	for {
 		select {
 		case err = <-wc:
-			if err != nil {
-				return err
-			}
-		case err = <-wp:
 			if err != nil {
 				return err
 			}
