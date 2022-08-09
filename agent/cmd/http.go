@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -16,6 +17,8 @@ import (
 
 // delayCmd handles network delay command execution
 type httpCmd struct {
+	errorCode uint
+	errorRate float32
 	average   uint
 	variation uint
 	duration  time.Duration
@@ -36,6 +39,8 @@ type proxy struct {
 	target uint
 	delay  uint
 	variation uint
+	errorCode uint
+	errorRate float32
 	srv *http.Server
 }
 
@@ -95,11 +100,17 @@ func (s *httpCmd) run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("variation must be less that average delay")
 	}
 
+	if s.errorRate < 0.0 || s.errorRate > 1.0 {
+		return fmt.Errorf("error rate must be in the range [0.0, 1.0]")
+	}
+
 	p := proxy{
 		port: s.port,
 		target: s.target,
 		delay: s.average,
 		variation: s.variation,
+		errorCode: s.errorCode,
+		errorRate: s.errorRate,
 	}
 
 	wc := make(chan error)
@@ -144,6 +155,8 @@ func BuildHttpCmd() *cobra.Command {
 	c.Flags().DurationVarP(&d.duration, "duration", "d", 60*time.Second, "duration of the dusruption")
 	c.Flags().UintVarP(&d.average, "average", "a", 100, "average request delay (milseconds)")
 	c.Flags().UintVarP(&d.variation, "variation", "v", 0, "variation in request delay (milseconds")
+	c.Flags().UintVarP(&d.errorCode, "error", "e", 0, "error code")
+	c.Flags().Float32VarP(&d.errorRate, "rate", "r", 0, "error rate")
 	c.Flags().StringVarP(&d.iface, "interface", "i", "eth0", "interface to disrupt")
 	c.Flags().UintVarP(&d.port, "port", "p", 8080, "port the proxy will listen to")
 	c.Flags().UintVarP(&d.target, "target", "t", 80, "port the proxy will redirect request to")
@@ -160,16 +173,27 @@ func (p proxy)Start() error {
     }
 
     reverseProxy := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-	req.Host = originServerURL.Host
-        req.URL.Host = originServerURL.Host
-        req.URL.Scheme = originServerURL.Scheme
-        req.RequestURI = ""
-        originServerResponse, err := http.DefaultClient.Do(req)
-        if err != nil {
-            rw.WriteHeader(http.StatusInternalServerError)
-            _, _ = fmt.Fprint(rw, err)
-            return
-        }
+		statusCode := 0
+		body := io.NopCloser(strings.NewReader(""))
+	
+		if p.errorRate > 0 && rand.Float32() <= p.errorRate {
+			// force error code
+			statusCode = int(p.errorCode)
+		} else {
+			req.Host = originServerURL.Host
+			req.URL.Host = originServerURL.Host
+			req.URL.Scheme = originServerURL.Scheme
+			req.RequestURI = ""
+			originServerResponse, err := http.DefaultClient.Do(req)
+			if err != nil {
+				rw.WriteHeader(http.StatusInternalServerError)
+				_, _ = fmt.Fprint(rw, err)
+				return
+			}
+
+			statusCode = originServerResponse.StatusCode
+			body = originServerResponse.Body
+		}
 
 		delay := int(p.delay)
 		if p.variation > 0 {
@@ -179,8 +203,8 @@ func (p proxy)Start() error {
 
         // return response to the client
 		// TODO: return headers
-        rw.WriteHeader(originServerResponse.StatusCode)
-        io.Copy(rw, originServerResponse.Body)
+        rw.WriteHeader(statusCode)
+        io.Copy(rw, body)
     })
 
     p.srv = &http.Server{

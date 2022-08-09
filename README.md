@@ -119,12 +119,14 @@ Methods:
         - variation: variation in the delay (in milliseconds)
         - duration: duration of the disruption 
 
-`slowdownHttp`: delays http requests to the pod.
+`disruptHttp`: disrupts http requests to the pod.
 
       Parameters:
-        options: controls the delay attack
+        options: controls the attack
           - delay: average delay in network packages (in milliseconds)
           - variation: variation in the delay (in milliseconds)
+          - error_rate: rate of requests that will return an error
+          - error_code: error code to return
           - duration: duration of the disruption
           - target: port on which the requests will be intercepted (defaults to 80)
           - port: port the transparent proxy will use to listen for requests (defaults to 8080)
@@ -178,6 +180,25 @@ delay ✓ [======================================] 1 VUs        00m10.0s/10m0s  
       ↳  99% — ✓ 8824 / ✗ 6
 
 ```
+
+## Introduce disruptions in http connections to pod
+
+The [disrupt-http.js example](examples/disrupt-http.js) shows how `PodDisruptor` can be used for testing the effect of disruptions in the http requests served by an instance of a deloyment. The example uses a deployment of the `httpbin`. The initial setup makes each request to take `100ms`. When executed without any disruption the statistics looks like this.
+
+```
+http_req_duration..............: avg=101.66ms min=100.59ms med=101.69ms max=107.24ms p(90)=102.22ms p(95)=102.36ms
+```
+
+When the disruption of an additional `100ms` delay and an error rate of 10% of requests is introduced for a period of `30s`, we can see how the stastics are affected (in particular, `p(90)` and `p(95)`):
+
+```bash
+     http_req_duration..............: avg=148.96ms min=100.39ms med=104.44ms max=324.18ms p(90)=205.17ms p(95)=205.58ms
+```
+Also the statistics show a number of failed requests:
+```
+ http_req_failed................: 5.01%  ✓ 300       ✗ 5686
+```
+> Notice we requested an error rate of 0.1 (10%) but we are only applying if for 30s, therefore with respect of the total number of request, only 5% fail.
 
 ## Introduce delay in network
 
