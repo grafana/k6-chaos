@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -34,6 +35,7 @@ type proxy struct {
 	port uint
 	target uint
 	delay  uint
+	variation uint
 	srv *http.Server
 }
 
@@ -89,10 +91,15 @@ func (s *httpCmd) run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("duration must be at least one second")
 	}
 
+	if s.variation > s.average {
+		return fmt.Errorf("variation must be less that average delay")
+	}
+
 	p := proxy{
 		port: s.port,
 		target: s.target,
 		delay: s.average,
+		variation: s.variation,
 	}
 
 	wc := make(chan error)
@@ -158,7 +165,12 @@ func (p proxy)Start() error {
         req.URL.Scheme = originServerURL.Scheme
         req.RequestURI = ""
         originServerResponse, err := http.DefaultClient.Do(req)
-	time.Sleep(time.Duration(p.delay) * time.Millisecond)
+
+		delay := int(p.delay)
+		if p.variation > 0 {
+		   delay = delay + int(p.variation) - 2 *rand.Intn(int(p.variation))
+		}
+		time.Sleep(time.Duration(delay) * time.Millisecond)
         if err != nil {
             rw.WriteHeader(http.StatusInternalServerError)
             _, _ = fmt.Fprint(rw, err)

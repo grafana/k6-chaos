@@ -48,6 +48,7 @@ export function disrupt(data) {
   podDisruptor.slowdownHttp(
     {
       delay: 100,
+      variation: 50,
       duration: "30s"
     }
   )
