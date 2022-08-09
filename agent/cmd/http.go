@@ -38,7 +38,7 @@ type proxy struct {
 }
 
 // builds a command for adding or removing a transparent proxy using iptables
-func (s *httpCmd) buildIptablesCmd(action Action) *exec.Cmd {
+func (s *httpCmd) buildRedirectCmd(action Action) *exec.Cmd {
 	return exec.Command(
 		"iptables",
 		"-t",
@@ -46,7 +46,7 @@ func (s *httpCmd) buildIptablesCmd(action Action) *exec.Cmd {
 		string(action),
 		"PREROUTING",
 		"-i",
-	        s.iface,	
+		s.iface,	
 		"-p",
 		"tcp",
 		"--dport",
@@ -55,6 +55,30 @@ func (s *httpCmd) buildIptablesCmd(action Action) *exec.Cmd {
 		"REDIRECT",
 		"--to-port",
 		strconv.Itoa(int(s.port)),
+	)
+}
+
+
+// builds a command for forcing reconnections 
+func (s *httpCmd) buildResetCmd(port uint, action Action) *exec.Cmd {
+	return exec.Command(
+		"iptables",
+		string(action),
+		"INPUT",
+		"-i",
+	    s.iface,
+		"-p",
+		"tcp",
+		"--dport",
+		strconv.Itoa(int(port)),
+		"-m",
+		"state",
+		"--state",
+		"ESTABLISHED",
+		"-j",
+		"REJECT",
+		"--reject-with",
+		"tcp-reset",
 	)
 }
 
@@ -77,19 +101,20 @@ func (s *httpCmd) run(cmd *cobra.Command, args []string) error {
 	}()
 
 	defer func() {
-		s.buildIptablesCmd(DELETE).Run()
+		s.buildRedirectCmd(DELETE).Run()
+		s.buildResetCmd(s.target, DELETE).Run()
+		s.buildResetCmd(s.port, ADD).Run()
 		p.Stop()
 	}()
 
-	err := s.buildIptablesCmd(ADD).Run()
-	if err != nil {
-		return err
-	}
+	s.buildResetCmd(s.port, DELETE).Run()
+	s.buildRedirectCmd(ADD).Run()
+	s.buildResetCmd(s.target, ADD).Run()
 
 	// wait for given duration or proxy server error
 	for {
 		select {
-		case err = <-wc:
+		case err := <-wc:
 			if err != nil {
 				return err
 			}
