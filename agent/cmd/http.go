@@ -165,20 +165,21 @@ func (p proxy)Start() error {
         req.URL.Scheme = originServerURL.Scheme
         req.RequestURI = ""
         originServerResponse, err := http.DefaultClient.Do(req)
-
-		delay := int(p.delay)
-		if p.variation > 0 {
-		   delay = delay + int(p.variation) - 2 *rand.Intn(int(p.variation))
-		}
-		time.Sleep(time.Duration(delay) * time.Millisecond)
         if err != nil {
             rw.WriteHeader(http.StatusInternalServerError)
             _, _ = fmt.Fprint(rw, err)
             return
         }
 
+		delay := int(p.delay)
+		if p.variation > 0 {
+		   delay = delay + int(p.variation) - 2 *rand.Intn(int(p.variation))
+		}
+		time.Sleep(time.Duration(delay) * time.Millisecond)
+
         // return response to the client
-        rw.WriteHeader(http.StatusOK)
+		// TODO: return headers
+        rw.WriteHeader(originServerResponse.StatusCode)
         io.Copy(rw, originServerResponse.Body)
     })
 
