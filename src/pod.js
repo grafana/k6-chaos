@@ -72,7 +72,8 @@ export class PodDisruptor {
 	    const port = options.port || 8080
         const error_code = options.error_code || 0
         const error_rate = options.error_rate || 0.0
-        const command = [
+        const exclude = options.exclude || []
+        let command = [
             "k6-chaos-agent",
             "http",
             "-a", delay,
@@ -83,11 +84,14 @@ export class PodDisruptor {
             "-p", port,
             "-t", target
         ]
+        exclude.forEach(e => {
+            command = command.concat("-x", e)
+        })
         this.client.pods.exec({
             pod: this.pod,
             namespace: this.namespace,
             container: "k6-chaos",
-	    command: command
+            command: command
         })
         return this.name
     }
