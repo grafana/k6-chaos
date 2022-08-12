@@ -52,6 +52,34 @@ export class PodDisruptor {
         return this.name
     }
 
+    disruptHttp(options){
+        const duration = options.duration || '30s'
+        const delay = options.delay || 100
+        const variation = options.variation || 0
+	    const target = options.target || 80
+	    const port = options.port || 8080
+        const error_code = options.error_code || 0
+        const error_rate = options.error_rate || 0.0
+        const command = [
+            "k6-chaos-agent",
+            "http",
+            "-a", delay,
+            "-v", variation,
+            "-d", duration,
+            "-e", error_code,
+            "-r", error_rate,
+            "-p", port,
+            "-t", target
+        ]
+        this.client.pods.exec({
+            pod: this.pod,
+            namespace: this.namespace,
+            container: "k6-chaos",
+	    command: command
+        })
+        return this.name
+    }
+
     kill() {
         this.client.pods.delete(this.pod, this.namespace)
     }
