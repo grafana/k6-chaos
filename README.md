@@ -123,7 +123,7 @@ Methods:
 
       Parameters:
         options: controls the attack
-          - delay: average delay in network packages (in milliseconds)
+          - delay: average delay in requests (in milliseconds)
           - variation: variation in the delay (in milliseconds)
           - error_rate: rate of requests that will return an error
           - error_code: error code to return
@@ -134,7 +134,7 @@ Methods:
 
 ## Examples
 
-The [./exaples](./examples) forlder contains examples of using `k6-chaos`. 
+The [./exaples](./examples) folder contains examples of using `k6-chaos`. 
 
 
 ### Running examples
@@ -189,7 +189,7 @@ The [disrupt-http.js example](examples/disrupt-http.js) shows how `PodDisruptor`
 http_req_duration..............: avg=101.66ms min=100.59ms med=101.69ms max=107.24ms p(90)=102.22ms p(95)=102.36ms
 ```
 
-When the disruption of an additional `100ms` delay and an error rate of 10% of requests is introduced for a period of `30s`, we can see how the stastics are affected (in particular, `p(90)` and `p(95)`):
+When the disruption of an additional `100ms` delay and an error rate of 10% of requests is introduced for a period of `30s`, we can see how the statistics are affected (in particular, `p(90)` and `p(95)`):
 
 ```bash
      http_req_duration..............: avg=148.96ms min=100.39ms med=104.44ms max=324.18ms p(90)=205.17ms p(95)=205.58ms

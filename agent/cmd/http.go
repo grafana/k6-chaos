@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// delayCmd handles network delay command execution
+// httpCmd handles disruptions in http requests
 type httpCmd struct {
 	errorCode uint
 	errorRate float32
