@@ -108,6 +108,7 @@ Methods:
         - selector: labels for selecting target pod(s). An empty selector matches all pods
         - picker: strategy used for picking pod(s) to disrupt from potential targets.
           Presenlty the only suppored value is 'ramdom' (one random pod)
+        - wait: timeout (as a duration) for the disruptor to be initilized (defaults to '10s')
 
 `kill`: kill pod
 

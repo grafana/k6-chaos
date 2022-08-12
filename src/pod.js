@@ -7,6 +7,7 @@ export class PodDisruptor {
     constructor(client, options) {
         this.client = client
         this.options = options
+        this.wait = options.wait || "30s"
         this.selector = options.selector || {}
         this.namespace = options.namespace || 'default'
         this.picker = options.picker || RANDOM_PICKER
@@ -30,9 +31,9 @@ export class PodDisruptor {
                 image: "grafana/k6-chaos",
                 pull_policy: "IfNotPresent",
                 capabilities: ["NET_ADMIN","NET_RAW"],
+                wait: this.wait
             }   
         )
-        sleep(10)  // give time for the container to start
     }
 
     _selectPod() {
