@@ -10,7 +10,18 @@ export class PodDisruptor {
         this.selector = options.selector || {}
         this.namespace = options.namespace || 'default'
         this.picker = options.picker || RANDOM_PICKER
-        this. pod =  this._selectPod()
+        this.pod =  this._selectPod()
+        this._addChaosAgent()
+    }
+
+    _addChaosAgent() {
+        const pod = this.client.pods.get(this.pod, this.namespace)
+        for (const c of pod.spec.ephemeral_containers) {
+            if (c.name == "k6-chaos" ) {
+                return
+            }
+        }
+
         this.client.pods.addEphemeralContainer(
             this.pod,
             this.namespace,
