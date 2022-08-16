@@ -195,11 +195,13 @@ func (p proxy)Start() error {
 			body = originServerResponse.Body
 		}
 
-		delay := int(p.delay)
-		if p.variation > 0 {
-		   delay = delay + int(p.variation) - 2 *rand.Intn(int(p.variation))
+		if p.delay > 0 {
+			delay := int(p.delay)
+			if p.variation > 0 {
+				delay = delay + int(p.variation) - 2 *rand.Intn(int(p.variation))
+			}
+			time.Sleep(time.Duration(delay) * time.Millisecond)
 		}
-		time.Sleep(time.Duration(delay) * time.Millisecond)
 
         // return response to the client
 		// TODO: return headers
