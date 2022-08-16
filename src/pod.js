@@ -66,7 +66,7 @@ export class PodDisruptor {
 
     disruptHttp(options){
         const duration = options.duration || '30s'
-        const delay = options.delay || 100
+        const delay = options.delay || 0
         const variation = options.variation || 0
 	    const target = options.target || 80
 	    const port = options.port || 8080

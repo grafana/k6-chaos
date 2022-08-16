@@ -47,7 +47,7 @@ export function disrupt(data) {
 
   podDisruptor.disruptHttp(
     {
-      delay: 100,
+      delay: 20,
       duration: "30s",
       error_code: 500,
       error_rate: 0.1

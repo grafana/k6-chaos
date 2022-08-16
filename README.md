@@ -124,14 +124,14 @@ Methods:
 
       Parameters:
         options: controls the attack
-          - delay: average delay in requests (in milliseconds)
-          - variation: variation in the delay (in milliseconds)
-          - error_rate: rate of requests that will return an error
+          - delay: average delay in requests (in milliseconds. Default is 0ms)
+          - variation: variation in the delay (in milliseconds. default is 0ms)
+          - error_rate: rate of requests that will return an error (float in the range 0.0 to 1.0. Default is 0.0)
           - error_code: error code to return
-          - duration: duration of the disruption
-          - target: port on which the requests will be intercepted (defaults to 80)
-          - port: port the transparent proxy will use to listen for requests (defaults to 8080)
-          - interface: interface on thich the traffic will be intercepted (defaults to eth0)
+          - duration: duration of the disruption (default is 30s)
+          - target: port on which the requests will be intercepted (defaults is 80)
+          - port: port the transparent proxy will use to listen for requests (default is 8080)
+          - interface: interface on which the traffic will be intercepted (default is eth0)
 
 ## Examples
 
