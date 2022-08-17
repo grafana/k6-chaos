@@ -89,3 +89,18 @@ spec:
     }   
 }
 
+export class ServiceHelper {
+    constructor(k8sClient, name, namespace) {
+        this.k8sClient = k8sClient
+        this.name = name
+        this.namespace = namespace
+    }
+
+    getIp() {
+        const svc = this.k8sClient.services.get(this.name, this.namespace)
+        if (svc.status.load_balancer.ingress.length == 0) {
+            throw `service ${service} does not have an external ip`
+        }
+        return svc.status.load_balancer.ingress[0].ip
+    }
+}
