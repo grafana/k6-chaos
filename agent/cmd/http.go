@@ -25,6 +25,7 @@ type httpCmd struct {
 	iface     string
 	port      uint
 	target    uint
+	excluded  []string
 }
 
 type Action string
@@ -41,7 +42,9 @@ type proxy struct {
 	variation uint
 	errorCode uint
 	errorRate float32
+	excluded  []string
 	srv *http.Server
+
 }
 
 // builds a command for adding or removing a transparent proxy using iptables
@@ -108,6 +111,7 @@ func (s *httpCmd) run(cmd *cobra.Command, args []string) error {
 		port: s.port,
 		target: s.target,
 		delay: s.average,
+		excluded: s.excluded,
 		variation: s.variation,
 		errorCode: s.errorCode,
 		errorRate: s.errorRate,
@@ -160,10 +164,19 @@ func BuildHttpCmd() *cobra.Command {
 	c.Flags().StringVarP(&d.iface, "interface", "i", "eth0", "interface to disrupt")
 	c.Flags().UintVarP(&d.port, "port", "p", 8080, "port the proxy will listen to")
 	c.Flags().UintVarP(&d.target, "target", "t", 80, "port the proxy will redirect request to")
+	c.Flags().StringArrayVarP(&d.excluded,"exclude","x", []string{}, "path(s) to be excluded from disruption")
 
 	return c
 }
 
+func contains(list []string, target string,) bool {
+	for _, element := range(list) {
+		if element == target {
+			return true
+		}
+	}
+	return false
+}
 
 func (p proxy)Start() error {
     // define origin server URL
@@ -175,8 +188,10 @@ func (p proxy)Start() error {
     reverseProxy := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		statusCode := 0
 		body := io.NopCloser(strings.NewReader(""))
-	
-		if p.errorRate > 0 && rand.Float32() <= p.errorRate {
+
+		excluded := contains(p.excluded, req.URL.Path)
+
+		if !excluded && p.errorRate > 0 && rand.Float32() <= p.errorRate {
 			// force error code
 			statusCode = int(p.errorCode)
 		} else {
@@ -195,7 +210,7 @@ func (p proxy)Start() error {
 			body = originServerResponse.Body
 		}
 
-		if p.delay > 0 {
+		if !excluded && p.delay > 0 {
 			delay := int(p.delay)
 			if p.variation > 0 {
 				delay = delay + int(p.variation) - 2 *rand.Intn(int(p.variation))

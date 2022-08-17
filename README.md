@@ -132,6 +132,7 @@ Methods:
           - target: port on which the requests will be intercepted (defaults is 80)
           - port: port the transparent proxy will use to listen for requests (default is 8080)
           - interface: interface on which the traffic will be intercepted (default is eth0)
+          - exclude: list of urls to be excluded from disruption (e.g. /health)
 
 ## Examples
 
