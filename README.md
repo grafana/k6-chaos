@@ -168,6 +168,37 @@ Methods:
           - interface: interface on which the traffic will be intercepted (default is eth0)
           - exclude: list of urls to be excluded from disruption (e.g. /health)
 
+## Service Disruption
+
+The `ServiceDisruptor` class allows disruption of Services
+
+Methods:
+
+`constructor`: creates a service disruptor
+
+    Parameters:
+      client: k8s client from xk6-kubernetes
+      name: name of the target service
+      options:
+        - namespace: namespace for selecting target pod(s) 
+        - wait: timeout (as a duration) for the disruptor to be initilized (defaults to '10s')
+
+`kill`: kill pod
+
+`disruptHttp`: disrupts http requests to the service.
+
+      Parameters:
+        options: controls the attack
+          - delay: average delay in requests (in milliseconds. Default is 0ms)
+          - variation: variation in the delay (in milliseconds. default is 0ms)
+          - error_rate: rate of requests that will return an error (float in the range 0.0 to 1.0. Default is 0.0)
+          - error_code: error code to return
+          - duration: duration of the disruption (default is 30s)
+          - target: port on which the requests will be intercepted (defaults is 80)
+          - port: port the transparent proxy will use to listen for requests (default is 8080)
+          - interface: interface on which the traffic will be intercepted (default is eth0)
+          - exclude: list of urls to be excluded from disruption (e.g. /health)
+
 ## Examples
 
 The [./exaples](./examples) folder contains examples of using `k6-chaos`. 
@@ -250,3 +281,95 @@ When the disruption of an additional `200ms` delay is introduced for a period of
      http_req_duration..............: avg=126.21ms min=100.52ms med=101.7ms  max=952.95ms p(90)=301.28ms p(95)=301.8ms 
 s
 ```
+
+## Http disruptions in a microservices application
+
+The [disrupt-shop.js example](examples/disrupt-shop.js) shows a script that tests the effect of http failures or delays in a microservice of the [Sock Shop application](https://github.com/microservices-demo/microservices-demo). This application is a polyglot microservices-based application that implements a fully functional e-Commerce site. 
+
+![Architecture diagram](https://raw.githubusercontent.com/microservices-demo/microservices-demo.github.io/HEAD/assets/Architecture.png)Source: [Microservices Demo Design](https://github.com/microservices-demo/microservices-demo/blob/master/internal-docs/design.md)
+
+It  offers a web interface that allows users to register, browse the catalog, and buy items.
+![Web store](https://github.com/microservices-demo/microservices-demo.github.io/raw/0ac7e0e579d83ce04e14f3b0942f7a463b72da74/assets/sockshop-frontend.png)
+
+Each microservice has its own API that can be accessed directly by means of their corresponding Kubernetes services. The front-end service also [exposes all these apis](https://github.com/microservices-demo/front-end/tree/master/api). Therefore all APIS can be accessed by means of the front-end's Kubernetes service.
+
+### Deployment
+
+The Socks Shop application can be [deployed in Kubernetes](https://github.com/microservices-demo/microservices-demo/tree/master/deploy/kubernetes#installing-sock-shop-on-kubernetes).
+
+
+> The application is deployed in the `sock-shop` namespace. The following examples assume you have set the default namespace accordingly with the command `kubectl config set-context --current --namespace sock-shop`
+
+The default deployment exposes all microservices as `ClusterIP` services and therefore are not accessible from outside the cluster.
+
+```console
+$ kubectl get svc
+NAME           TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)             AGE
+carts          ClusterIP      10.96.116.20    <none>           80/TCP              1h
+carts-db       ClusterIP      10.96.205.210   <none>           27017/TCP           1h
+catalogue      ClusterIP      10.96.242.206   <none>           80:31924/TCP        1h
+catalogue-db   ClusterIP      10.96.49.27     <none>           3306/TCP            1h
+front-end      ClusterIP      10.96.95.228    <none>           80:30001/TCP        1h
+orders         ClusterIP      10.96.4.4       <none>           80/TCP              1h
+orders-db      ClusterIP      10.96.44.214    <none>           27017/TCP           1h
+payment        ClusterIP      10.96.23.109    <none>           80/TCP              1h
+queue-master   ClusterIP      10.96.167.37    <none>           80/TCP              1h
+rabbitmq       ClusterIP      10.96.252.218   <none>           5672/TCP,9090/TCP   1h
+session-db     ClusterIP      10.96.131.80    <none>           6379/TCP            1h
+shipping       ClusterIP      10.96.189.187   <none>           80/TCP              1h
+user           ClusterIP      10.96.113.92    <none>           80/TCP              1h
+user-db        ClusterIP      10.96.0.236     <none>           27017/TCP           1h
+```
+
+### Accessing the application from test scripts
+
+### As a LoadBalancer service
+
+If your cluster has a [load balancer configured](#as-a-loadbalancer-service) you can expose the front-end service my changing its type to 'LoadBalancer':
+
+```bash
+> kubectl patch svc front-end -p '{"spec": {"type": "LoadBalancer"}}'
+service/front-end patched
+
+> kubectl get svc front-end
+NAME        TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)        AGE
+front-end   LoadBalancer   10.96.95.228   172.18.255.200   80:30001/TCP   2h
+```
+Notice now the service has an external IP assigned. This can be used for accessing it from the host machine:
+
+```
+> curl -v 172.18.255.200/catalogue/3395a43e-2d88-40de-b95f-e00e1502085b | jq .
+> GET /catalogue/3395a43e-2d88-40de-b95f-e00e1502085b HTTP/1.1
+> Host: 172.18.255.200
+> User-Agent: curl/7.81.0
+> Accept: */*
+> 
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< set-cookie: md.sid=s%3AAv4bhwm5U-Ed2hesf6GF7ljO6J71Z86A.fqnJ8CIVShpevJXLbsf9JPfBQAYu12ZP93KePiyMcBs; Path=/; HttpOnly
+< Date: Wed, 17 Aug 2022 16:37:16 GMT
+< Connection: keep-alive
+< Transfer-Encoding: chunked
+< 
+{ [293 bytes data]
+100   286    0   286    0     0  29375      0 --:--:-- --:--:-- --:--:-- 31777
+* Connection #0 to host 172.18.255.200 left intact
+{
+  "id": "3395a43e-2d88-40de-b95f-e00e1502085b",
+  "name": "Colourful",
+  "description": "proident occaecat irure et excepteur labore minim nisi amet irure",
+  "imageUrl": [
+    "/catalogue/images/colourful_socks.jpg",
+    "/catalogue/images/colourful_socks.jpg"
+  ],
+  "price": 18,
+  "count": 438,
+  "tag": [
+    "brown",
+    "blue"
+  ]
+}
+
+```
+
