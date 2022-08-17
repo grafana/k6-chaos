@@ -48,6 +48,21 @@ Methods
 
 `getPods` returns a list with the names of the deployment pods
 
+### ServiceHelper
+
+The `ServiceHelper` class facilitates accessing services.
+
+Methods
+
+`constructor` creates a helper for accessing services
+
+      Parameters:
+        client: k8s client from xk6-kubernetes
+        name: name of the service
+        namespace: target namespace
+
+
+`getIp` returns the external IP of the service. Throwns an error if none is set.
 
 ## KubernetesDisruptor
 
