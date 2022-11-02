@@ -1,10 +1,11 @@
-> ### ⚠️ This is a proof of concept
->
-> As this is a proof of concept, the API may break in the future. USE AT YOUR OWN RISK!
 
 # k6-chaos
 
 This repo contains a [collection of JavaScript helpers](./src/chaos.js) to run chaos experiments *effortlessly* on top of [k6](https://k6.io).
+
+> ## Deprecation notice
+> ⚠️ k6-chaos has been deprecated in favor or [xk6-disruptor](https://github.com/grafana/xk6-disruptor) a k6 extension providing fault injection capabilities.
+
 
 # Getting started
 
